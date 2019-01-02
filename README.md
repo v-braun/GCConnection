@@ -105,6 +105,7 @@ Enter the needed information.
 
 
 During my tests I found out that GameCenter will not recognize your app until you create at least one leaderboard. 
+
 Goto /Features/Game Center/Leaderboard
 
 ![App Store Connect Leaderboard](https://github.com/v-braun/GCConnection/blob/master/.assets/appstore-conn-leaderboard.png?raw=true)
