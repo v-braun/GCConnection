@@ -42,6 +42,7 @@ class ViewController: UIViewController, AuthHandler {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        
         _statusLbl.text = "..."
         
         _sendBtn.layer.cornerRadius = 5

@@ -23,9 +23,61 @@ By [v-braun - viktor-braun.de](https://viktor-braun.de).
 
 ## Usage
 
+For detailed usage check out the demo [ViewController.swift](https://github.com/v-braun/GCConnection/blob/master/GCConnection/ViewController.swift) file.
+
+
+### Authenticate
+
+In your AppDelegate invoke *authenticate*
+
+``` swift
+func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+    
+    GCConnection.shared.authenticate()
+    
+    return true
+}
 ```
-use GCConnection
+
+Later on in your ViewControlelr you can check the authenticate status
+
+``` swift
+
+switch GCConnection.shared.authStatus {
+case .undef:
+    // not authenticated
+case .loginCancelled:
+    // login canccelled 🙅‍♀️
+case .error(let err):
+    // auth err
+case .loginRequired(let viewController):
+    // login required
+    // show present ciewController - it is the GC login view
+case .ok(let localPlayer):
+    // authenticated 🥳
+}
+
 ```
+
+You can also listen to authentication state changes!
+
+Implement the *AuthHandler* protocol and set the authHandler property
+
+``` swift
+
+override func viewDidLoad() {
+    super.viewDidLoad()
+    
+    GCConnection.shared.authHandler = self
+}
+
+```
+
+### Match making
+
+
+
+
 
 ## Configuration
 
@@ -53,12 +105,17 @@ Enter the needed information.
 
 **IMPORTANT:** The BundleIdentifier should match your Project setting
 
-```
-configure GCConnection
-```
+
+During my tests I found out that GameCenter will not recognize your app until you create at least one leaderboard. 
+
+Goto /Features/Game Center/Leaderboard
+
+![App Store Connect Leaderboard](https://github.com/v-braun/GCConnection/blob/master/.assets/appstore-conn-leaderboard.png?raw=true)
+
+
 
 ## Related Projects
-[Cocoa Rocks](https://cocoa.rocks/): this and other awesome Cocoa Controls
+[Cocoa Rocks](https://cocoa.rocks/): a gallery of beatiful Cocoa Controls
 [awesome-cocoa](https://github.com/v-braun/awesome-cocoa): an awesome list of cocoa controls
 
 
