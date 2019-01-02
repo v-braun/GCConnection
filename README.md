@@ -36,6 +36,23 @@ Go to Project/Capabilities and enable GameCenter
 
 ![Enable GameCenter](https://github.com/v-braun/GCConnection/blob/master/.assets/enable-gc-proj.png?raw=true)
 
+
+After that you have to register your app in [App Store Connect](https://appstoreconnect.apple.com/).
+
+Login with your account and go to **My Apps**
+
+![App Store Connect Home](https://github.com/v-braun/GCConnection/blob/master/.assets/appstore-conn-home.png?raw=true)
+
+On the Dashboard add a new App
+
+
+![App Store Connect Dashboard](https://github.com/v-braun/GCConnection/blob/master/.assets/appstore-conn-dashboard.png?raw=true)
+
+
+Enter the needed information. 
+
+**IMPORTANT:** The BundleIdentifier should match your Project setting
+
 ```
 configure GCConnection
 ```
