@@ -7,8 +7,9 @@
 //
 
 import UIKit
+import GameKit
 
-class ViewController: UIViewController, AuthHandler {
+class ViewController: UIViewController{
     
 
     
@@ -57,12 +58,12 @@ class ViewController: UIViewController, AuthHandler {
         _findMatchBtn.layer.borderColor = UIColor.white.cgColor
         _findMatchBtn.layer.borderWidth = 1
         
-        self.updateUIStates()
+        self.updateAuthUIStates()
         
         GCConnection.shared.authHandler = self
     }
     
-    func updateUIStates(){
+    func updateAuthUIStates(){
         set(enable: false, onBtn: _sendBtn)
         set(enable: false, onBtn: _connectBtn)
         set(enable: false, onBtn: _findMatchBtn)
@@ -90,6 +91,36 @@ class ViewController: UIViewController, AuthHandler {
         }
         
     }
+    
+    func updateMatchUIStates(){
+        set(enable: false, onBtn: _sendBtn)
+        set(enable: false, onBtn: _connectBtn)
+        set(enable: false, onBtn: _findMatchBtn)
+        set(enable: false, onBtn: _sendBtn)
+        
+        _msgTxt.isEnabled = false;
+        _statusLbl.text = ""
+        
+        switch GCConnection.shared.authStatus {
+        case .undef:
+            _statusLbl.text = "not authenticated"
+            set(enable: true, onBtn: _connectBtn)
+        case .loginCancelled:
+            _statusLbl.text = "login canccelled"
+            set(enable: true, onBtn: _connectBtn)
+        case .error(let err):
+            _statusLbl.text = "auth err: \(err.localizedDescription)"
+            set(enable: true, onBtn: _connectBtn)
+        case .loginRequired(let viewController):
+            _statusLbl.text = "login required"
+            set(enable: true, onBtn: _connectBtn)
+            _connectBtn.titleLabel?.text = "show login view"
+        case .ok(let localPlayer):
+            _statusLbl.text = "authenticated"
+            set(enable: true, onBtn: _findMatchBtn)
+        }
+        
+    }
 
     func set(enable: Bool, onBtn : UIButton){
         onBtn.isEnabled = enable
@@ -105,8 +136,39 @@ class ViewController: UIViewController, AuthHandler {
 
     
     
+
+}
+
+
+
+extension ViewController : AuthHandler{
     func handle(connection: GCConnection, authStatusChanged: AuthStatus) {
-        self.updateUIStates()
+        self.updateAuthUIStates()
     }
 }
 
+extension ViewController : MatchHandler{
+    func handle(_ error: Error) {
+        self.updateAuthUIStates()
+        guard GCConnection.shared.authenticated else{
+            return
+        }
+    }
+    
+    func handle(_ state: MatchState) {
+        guard GCConnection.shared.authenticated else{
+            return
+        }
+    }
+    
+    func handle(data: Data, fromPlayer: GKPlayer) {
+        guard GCConnection.shared.authenticated else{
+            return
+        }
+        
+        
+        
+    }
+    
+    
+}

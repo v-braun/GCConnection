@@ -71,6 +71,12 @@ override func viewDidLoad() {
     GCConnection.shared.authHandler = self
 }
 
+extension ViewController : AuthHandler{
+    func handle(connection: GCConnection, authStatusChanged: AuthStatus) {
+        // your code ...
+    }
+}
+
 ```
 
 ### Match making

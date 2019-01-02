@@ -8,5 +8,7 @@ language: objective-c
 
 #xcode_scheme: GCConnection
 
+osx_image: xcode10.1
+
 script:
   - xcodebuild -scheme GCConnection -project GCConnection.xcodeproj -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 6S,OS=12.1' build
