@@ -132,6 +132,7 @@ public protocol MatchHandler{
     func handle(_ error : Error)
     func handle(_ state : MatchState)
     func handle(data : Data, fromPlayer : GKPlayer)
+    func handle(playerDisconnected : GKPlayer)
 }
 
 public class Match : NSObject, GKMatchDelegate{
@@ -141,8 +142,23 @@ public class Match : NSObject, GKMatchDelegate{
     
     public var state : MatchState = .pending
     
-    public var handler : MatchHandler?
-    public var players : [GKPlayer] = []
+    public var handler : MatchHandler? {
+        didSet{
+            DispatchQueue.main.async {
+                self.handler?.handle(self.state)
+            }
+        }
+    }
+    
+    public var players : [GKPlayer] {
+        get{
+            guard let p = self._match?.players else {
+                return []
+            }
+            
+            return p
+        }
+    }
     
     private func updateState(_ newState : MatchState){
         if newState == self.state{
@@ -197,16 +213,11 @@ public class Match : NSObject, GKMatchDelegate{
                 return
             }
             
-            guard let players = players else {
-                self.error(createError(withMessage: "unexpected nil while retrieve player list"))
-                return
-            }
-            
-            self.players = players
             self.updateState(.connected)
             GKMatchmaker.shared().finishMatchmaking(for: match)
         }
     }
+    
     
     
     public func match(_ match: GKMatch, player: GKPlayer, didChange state: GKPlayerConnectionState){
@@ -218,7 +229,10 @@ public class Match : NSObject, GKMatchDelegate{
         case .connected where self._match != nil && match.expectedPlayerCount == 0:
             initPlayers()
         case .disconnected:
-            self.updateState(.disconnected)
+            self.handler?.handle(playerDisconnected: player)
+            if match.players.count == 0{
+                self.updateState(.disconnected)
+            }
         default:
             break
         }

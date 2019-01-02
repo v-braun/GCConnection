@@ -74,6 +74,15 @@
                                     <action selector="sendTouched:" destination="BYZ-38-t0r" eventType="touchUpInside" id="oWz-O8-HDJ"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hEk-cg-9oM">
+                                <rect key="frame" x="127.5" y="297" width="120" height="40"/>
+                                <state key="normal" title="Cancel Match">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </state>
+                                <connections>
+                                    <action selector="cancelMatchTouched:" destination="BYZ-38-t0r" eventType="touchUpInside" id="N45-Jd-8jx"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" red="0.17601162170000001" green="0.39334976739999999" blue="0.78994305129999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
@@ -87,15 +96,20 @@
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="48p-3X-TM8" secondAttribute="trailing" constant="16" id="MgJ-47-nnH"/>
                             <constraint firstItem="IaV-Z3-aVX" firstAttribute="top" secondItem="G0y-89-0SA" secondAttribute="bottom" constant="30" id="VuL-Ed-eDt"/>
                             <constraint firstItem="G0y-89-0SA" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="W05-1o-93o"/>
+                            <constraint firstItem="hEk-cg-9oM" firstAttribute="width" secondItem="wp9-Pm-0ze" secondAttribute="width" id="adk-Vy-bIo"/>
                             <constraint firstItem="wp9-Pm-0ze" firstAttribute="height" secondItem="48p-3X-TM8" secondAttribute="height" id="icM-wW-yfM"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="G0y-89-0SA" secondAttribute="trailing" constant="40" id="ieJ-F1-mYp"/>
+                            <constraint firstItem="hEk-cg-9oM" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="jTM-QX-ajs"/>
                             <constraint firstItem="G0y-89-0SA" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="40" id="kjT-n2-wFe"/>
                             <constraint firstItem="48p-3X-TM8" firstAttribute="leading" secondItem="3RG-1a-sQJ" secondAttribute="trailing" constant="20" id="lLH-IK-Obk"/>
+                            <constraint firstItem="hEk-cg-9oM" firstAttribute="top" secondItem="3RG-1a-sQJ" secondAttribute="bottom" constant="43" id="tYr-20-9ns"/>
                             <constraint firstItem="48p-3X-TM8" firstAttribute="centerY" secondItem="3RG-1a-sQJ" secondAttribute="centerY" id="yDQ-Xv-mk0"/>
+                            <constraint firstItem="hEk-cg-9oM" firstAttribute="height" secondItem="wp9-Pm-0ze" secondAttribute="height" id="zBY-7J-E5I"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
                     <connections>
+                        <outlet property="_cancelMatch" destination="hEk-cg-9oM" id="2Zb-dk-lCb"/>
                         <outlet property="_connectBtn" destination="IaV-Z3-aVX" id="sob-9D-vlU"/>
                         <outlet property="_findMatchBtn" destination="wp9-Pm-0ze" id="8lY-QA-xsp"/>
                         <outlet property="_msgTxt" destination="3RG-1a-sQJ" id="73J-m9-atr"/>

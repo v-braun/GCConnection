@@ -82,7 +82,72 @@ extension ViewController : AuthHandler{
 ### Match making
 
 
+To create a match simply call *findMatch*.  
+To listen on status updates you should set the *handler* property on the match. 
 
+``` swift
+
+let match = try! GCConnection.shared.findMatch(minPlayers: 2, maxPlayers: 2)
+match.handler = self
+
+```
+
+Example implementation of the *MatchHandler* protocol:
+
+``` swift
+
+extension ViewController : MatchHandler{
+    func handle(_ error: Error) {
+        // error 
+    }
+    
+    func handle(_ state: MatchState) {
+        // status update 
+    }
+    
+    func handle(data: Data, fromPlayer: GKPlayer) {
+        // received data from given player
+    }
+    
+    func handle(playerDisconnected: GKPlayer) {
+        // given player has disconnected
+    }
+}
+
+
+```
+
+You can always cancel a match with
+
+``` swift
+
+match.cancel()
+
+```
+
+
+The active match is always accessible on the shared GCConnection instance 
+
+```
+
+You can always cancel a match with
+
+``` swift
+
+GCConnection.shared.activeMatch
+
+```
+
+### Send data
+
+To send data use broadCast method
+
+``` swift
+
+let data = "hello".data(using: .utf8)
+try! GCConnection.shared.activeMatch!.broadCast(data: data!, withMode: GKMatch.SendDataMode.reliable)
+
+```
 
 
 ## Configuration
@@ -116,7 +181,7 @@ Goto /Features/Game Center/Leaderboard
 
 
 ## Related Projects
-[Cocoa Rocks](https://cocoa.rocks/): a gallery of beatiful Cocoa Controls
+[Cocoa Rocks](https://cocoa.rocks/): a gallery of beatiful Cocoa Controls  
 [awesome-cocoa](https://github.com/v-braun/awesome-cocoa): an awesome list of cocoa controls
 
 
