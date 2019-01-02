@@ -1,0 +1,12 @@
+language: objective-c
+
+# if test available use this config istead of a custom script
+#xcode_destination: platform=iOS Simulator,OS=11.3,name=iPhone X
+#xcode_project: GCConnection.xcodeproj 
+# or use 
+# xcode_workspace: GCConnection.xcworkspace 
+
+#xcode_scheme: GCConnection
+
+script:
+  - xcodebuild -scheme GCConnection -workspace GCConnection.xcworkspace -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 6S,OS=12.1' build
