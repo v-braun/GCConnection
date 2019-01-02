@@ -94,8 +94,8 @@ match.handler = self
 
 Example implementation of the *MatchHandler* protocol:
 
-``` swift
 
+``` swift
 extension ViewController : MatchHandler{
     func handle(_ error: Error) {
         // error 
@@ -113,29 +113,18 @@ extension ViewController : MatchHandler{
         // given player has disconnected
     }
 }
-
-
 ```
 
-You can always cancel a match with
 
+You can always cancel a match with  
 ``` swift
-
 match.cancel()
-
 ```
 
 
 The active match is always accessible on the shared GCConnection instance 
-
-```
-
-You can always cancel a match with
-
 ``` swift
-
 GCConnection.shared.activeMatch
-
 ```
 
 ### Send data
