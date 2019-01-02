@@ -24,7 +24,8 @@ class ViewController: UIViewController{
     }
     
     @IBAction func findMatchTouched(_ sender: Any) {
-        let match = try! GCConnection.shared.findMatch(minPlayers: 2, maxPlayers: 2)
+        let match = try! GCConnection.shared.findMatch(minPlayers: 2, maxPlayers: 2, withTimeout: .now() + .seconds(15))
+        
         match.handler = self
     }
     
@@ -92,25 +93,22 @@ class ViewController: UIViewController{
         case .error(let err):
             _statusLbl.text = "auth err: \(err.localizedDescription)"
             set(enable: true, onBtn: _connectBtn)
-        case .loginRequired(let viewController):
+        case .loginRequired:
             _statusLbl.text = "login required"
             set(enable: true, onBtn: _connectBtn)
             _connectBtn.titleLabel?.text = "show login view"
-        case .ok(let localPlayer):
+        case .ok:
             _statusLbl.text = "authenticated"
             set(enable: true, onBtn: _findMatchBtn)
         }
         
     }
     
-    func updateMatchUIStates(){
-        guard let match = GCConnection.shared.activeMatch else{
-            return
-        }
-        
-        switch match.state {
+    func updateMatchUIStates(state : MatchState){
+        switch state {
         case .connected:
             var stat = "connected to match \n"
+            let match = GCConnection.shared.activeMatch!
             for p in match.players {
                 stat += "\(p.alias) \n"
             }
@@ -119,10 +117,22 @@ class ViewController: UIViewController{
             set(enable: false, onBtn: _findMatchBtn)
             set(enable: true, onBtn: _cancelMatch)
             _msgTxt.isEnabled = true
-        case .disconnected:
+        case .disconnected(let reason) where reason == .cancel:
             _statusLbl.text = "disconnected from match"
             set(enable: true, onBtn: _findMatchBtn)
             set(enable: false, onBtn: _cancelMatch)
+        case .disconnected(let reason) where reason == .matchMakingTimeout:
+            _statusLbl.text = "matchmaking timeout"
+            set(enable: true, onBtn: _findMatchBtn)
+            set(enable: false, onBtn: _cancelMatch)
+        case .disconnected(let reason) where reason == .matchEmpty:
+            _statusLbl.text = "no players in match"
+            set(enable: true, onBtn: _findMatchBtn)
+            set(enable: false, onBtn: _cancelMatch)
+        case .disconnected(let reason) where reason == .error:
+            _statusLbl.text = "disconnect because of an error"
+        case .disconnected(let reason):
+            _statusLbl.text = "unknown disconnect reason \(reason)"
         case .pending:
             _statusLbl.text = "pending match"
             set(enable: false, onBtn: _findMatchBtn)
@@ -163,7 +173,7 @@ extension ViewController : MatchHandler{
             return
         }
         
-        self.updateMatchUIStates()
+        self.updateMatchUIStates(state: .disconnected(reason: .error))
         _statusLbl.text = "match err: \(error.localizedDescription)"
     }
     
@@ -173,7 +183,7 @@ extension ViewController : MatchHandler{
             return
         }
         
-        self.updateMatchUIStates()
+        self.updateMatchUIStates(state: state)
     }
     
     func handle(data: Data, fromPlayer: GKPlayer) {
@@ -181,16 +191,18 @@ extension ViewController : MatchHandler{
             return
         }
         
-        self.updateMatchUIStates()
+        self.updateMatchUIStates(state: GCConnection.shared.activeMatch!.state)
         
         let msg = String(data: data, encoding: .utf8)!
         _statusLbl.text = "\(fromPlayer.alias): \(msg)"
     }
     
     func handle(playerDisconnected: GKPlayer) {
-        self.updateMatchUIStates()
+        if let match = GCConnection.shared.activeMatch{
+            self.updateMatchUIStates(state: match.state)
+            _statusLbl.text = "disconnected: \(playerDisconnected.alias)"
+        }
         
-        _statusLbl.text = "disconnected: \(playerDisconnected.alias)"
     }
     
 }

@@ -58,11 +58,15 @@ public class GCConnection{
                 return nil
             }
             
-            if cm.state == .disconnected {
+            switch cm.state {
+            case .disconnected(_):
                 _currentMatch = nil
+                return _currentMatch
+            default:
+                // none
+                return _currentMatch
             }
             
-            return _currentMatch
         }
     }
     
@@ -106,6 +110,13 @@ public class GCConnection{
     }
     
     func findMatch(minPlayers: Int, maxPlayers: Int) throws -> Match{
+        let defaultTimeout : DispatchTime = .now() + .seconds(60)
+        let result = try findMatch(minPlayers: minPlayers, maxPlayers: maxPlayers, withTimeout: defaultTimeout )
+        
+        return result
+    }
+    
+    func findMatch(minPlayers: Int, maxPlayers: Int, withTimeout : DispatchTime) throws -> Match{
         if activeMatch != nil {
             throw createError(withMessage: "there is already an active match")
         }
@@ -115,18 +126,23 @@ public class GCConnection{
         request.maxPlayers = maxPlayers
         
         let result = Match(rq: request, matchMaker: GKMatchmaker.shared())
-        result.find()
+        result.find(timeout: withTimeout)
         
         _currentMatch = result
         
         return result
     }
 }
-
+public enum DisconnectedReason{
+    case matchEmpty
+    case matchMakingTimeout
+    case cancel
+    case error
+}
 public enum MatchState{
     case pending
     case connected
-    case disconnected
+    case disconnected(reason : DisconnectedReason)
 }
 public protocol MatchHandler{
     func handle(_ error : Error)
@@ -161,22 +177,21 @@ public class Match : NSObject, GKMatchDelegate{
     }
     
     private func updateState(_ newState : MatchState){
-        if newState == self.state{
-            return
-        }
-        
         self.state = newState
-        
         DispatchQueue.main.async {
             self.handler?.handle(self.state)
         }
     }
     
     private func error(_ err : Error){
+        if err is GKError && (err as! GKError).code == GKError.Code.cancelled{
+            return
+        }
+        
         DispatchQueue.main.async {
             self.handler?.handle(err)
         }
-        self.cancel()
+        self.cancelInternal(reason: .error)
     }
     
     init(rq : GKMatchRequest, matchMaker : GKMatchmaker){
@@ -185,8 +200,20 @@ public class Match : NSObject, GKMatchDelegate{
         super.init()
     }
     
-    fileprivate func find() {
+    fileprivate func find(timeout : DispatchTime) {
+        DispatchQueue.main.asyncAfter(deadline: timeout, execute: {
+            switch self.state{
+                case .pending:
+                    self.cancelInternal(reason: .matchMakingTimeout)
+                default:
+                return
+            }
+            
+            
+            
+        })
         
+        self.state = .pending
         self._matchMaker.findMatch(for: self._request) { (match, err) in
             if let err = err {
                 self.error(err)
@@ -229,9 +256,12 @@ public class Match : NSObject, GKMatchDelegate{
         case .connected where self._match != nil && match.expectedPlayerCount == 0:
             initPlayers()
         case .disconnected:
-            self.handler?.handle(playerDisconnected: player)
+            DispatchQueue.main.async {
+                self.handler?.handle(playerDisconnected: player)
+            }
+            
             if match.players.count == 0{
-                self.updateState(.disconnected)
+                self.cancelInternal(reason: .matchEmpty)
             }
         default:
             break
@@ -257,27 +287,33 @@ public class Match : NSObject, GKMatchDelegate{
     }
     
     public func broadCast(data : Data, withMode : GKMatch.SendDataMode) throws{
-        guard self.state == .connected else{
-            return
-        }
-        
         guard let match = self._match else {
             return
         }
         
-        try match.sendData(toAllPlayers: data, with: withMode)
+        switch self.state {
+        case .connected:
+            try match.sendData(toAllPlayers: data, with: withMode)
+        default:
+            return
+        }
+    
+        
     }
     
     
-    
-    public func cancel(){
+    private func cancelInternal(reason : DisconnectedReason){
         self._matchMaker.cancel()
         if let match = self._match {
             self._match = nil
             match.disconnect()
         }
         
-        self.updateState(.disconnected)
+        self.updateState(.disconnected(reason: reason))
+    }
+    
+    public func cancel(){
+        cancelInternal(reason: .cancel)
     }
     
 }
