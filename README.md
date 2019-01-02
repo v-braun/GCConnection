@@ -16,21 +16,8 @@ By [v-braun - viktor-braun.de](https://viktor-braun.de).
 
 
 ## Installation
-### CocoaPods
-GCConnection is available on [CocoaPods](http://cocoapods.org). Just add the following to your project Podfile:
 
-```ruby
-pod 'GCConnection'
-```
-
-Or from GitHub:
-
-```ruby
-pod 'GCConnection', :git => 'https://github.com/v-braun/GCConnection.git'
-```
-
-### Manually
-1. Download and drop ```file-name.swift``` in your project.  
+1. Download and drop ```GCConnection.swift``` in your project.  
 2. Congratulations!  
 
 
@@ -41,6 +28,13 @@ use GCConnection
 ```
 
 ## Configuration
+
+### Prepare App for GameCenter support
+
+First you should enable the GameCenter feature in your ap.
+Go to Project/Capabilities and enable GameCenter
+
+![Enable GameCenter](https://github.com/v-braun/GCConnection/blob/master/.assets/enable-gc-proj.png?raw=true)
 
 ```
 configure GCConnection
