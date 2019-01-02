@@ -83,31 +83,28 @@ override func viewDidLoad() {
 
 ### Prepare App for GameCenter support
 
-First you should enable the GameCenter feature in your ap. 
-Go to Project/Capabilities and enable GameCenter
-
+First you should enable the GameCenter feature in your ap.  
+Go to Project/Capabilities and enable GameCenter  
 ![Enable GameCenter](https://github.com/v-braun/GCConnection/blob/master/.assets/enable-gc-proj.png?raw=true)
 
 
-After that you have to register your app in [App Store Connect](https://appstoreconnect.apple.com/). 
-Login with your account and go to **My Apps**
 
+After that you have to register your app in [App Store Connect](https://appstoreconnect.apple.com/). 
+Login with your account and go to **My Apps**  
 ![App Store Connect Home](https://github.com/v-braun/GCConnection/blob/master/.assets/appstore-conn-home.png?raw=true)
 
-On the Dashboard add a new App
 
 
+On the Dashboard add a new App  
 ![App Store Connect Dashboard](https://github.com/v-braun/GCConnection/blob/master/.assets/appstore-conn-dashboard.png?raw=true)
 
 
-Enter the needed information. 
+Enter the needed information.  
 **IMPORTANT:** The BundleIdentifier should match your Project setting
 
 
-During my tests I found out that GameCenter will not recognize your app until you create at least one leaderboard. 
-
-Goto /Features/Game Center/Leaderboard
-
+During my tests I found out that GameCenter will not recognize your app until you create at least one leaderboard.  
+Goto /Features/Game Center/Leaderboard  
 ![App Store Connect Leaderboard](https://github.com/v-braun/GCConnection/blob/master/.assets/appstore-conn-leaderboard.png?raw=true)
 
 
